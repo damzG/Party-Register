@@ -1,8 +1,32 @@
-function toggleFields(){
-    const isCouple = document.getElementById('couple').checked;
-    document.getElementById('singleName').style.display = isCouple ? 'none' : 'block';
-    document.getElementById('coupleNames').style.display = isCouple ? 'block' : 'none';
+function toggleFields() {
+  const singleDiv = document.getElementById('singleName');
+  const coupleDiv = document.getElementById('coupleNames');
+  const isCouple = document.getElementById('couple').checked;
+
+  if (isCouple) {
+    // Show couple
+    coupleDiv.classList.remove('hidden');
+    coupleDiv.classList.add('opacity-100', 'transition-opacity', 'duration-300');
+    
+    singleDiv.classList.add('opacity-0');
+    setTimeout(() => {
+      singleDiv.classList.add('hidden');
+      singleDiv.classList.remove('opacity-0', 'transition-opacity', 'duration-300');
+    }, 300);
+  } else {
+    // Show single
+    singleDiv.classList.remove('hidden');
+    singleDiv.classList.add('opacity-100', 'transition-opacity', 'duration-300');
+
+    coupleDiv.classList.add('opacity-0');
+    setTimeout(() => {
+      coupleDiv.classList.add('hidden');
+      coupleDiv.classList.remove('opacity-0', 'transition-opacity', 'duration-300');
+    }, 300);
+  }
 }
+
+
 
  async function submitForm(e) {
     e.preventDefault();
@@ -61,22 +85,31 @@ function showPreview(entry) {
 }
 
 function showMessage(message, isSuccess) {
-    let msgDiv = document.getElementById('message');
+  let msgDiv = document.getElementById('message');
 
-    if (!msgDiv) {
-        msgDiv = document.createElement('div');
-        msgDiv.id = 'message';
-        document.body.insertBefore(msgDiv, document.getElementById('preview'));
-    }
+  if (!msgDiv) {
+    msgDiv = document.createElement('div');
+    msgDiv.id = 'message';
+    msgDiv.className = "max-w-lg mx-auto my-4 p-3 rounded text-center font-semibold text-white";
+    msgDiv.setAttribute('aria-live', 'polite');
+    document.body.insertBefore(msgDiv, document.getElementById('preview'));
+  }
 
-    msgDiv.textContent = message;
-    msgDiv.style.color = isSuccess ? 'green' : 'red';
-    msgDiv.style.fontWeight = 'bold';
+  msgDiv.textContent = message;
 
-    setTimeout(() => {
-        msgDiv.remove();
-    }, 3000);
+  if (isSuccess) {
+    msgDiv.classList.remove('bg-red-600');
+    msgDiv.classList.add('bg-green-600');
+  } else {
+    msgDiv.classList.remove('bg-green-600');
+    msgDiv.classList.add('bg-red-600');
+  }
+
+  setTimeout(() => {
+    msgDiv.remove();
+  }, 3000);
 }
+
 
 
 async function fetchGuests() {
