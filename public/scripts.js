@@ -92,42 +92,45 @@ function showMessage(message, isSuccess) {
     msgDiv.id = 'message';
     msgDiv.className = "max-w-lg mx-auto my-4 p-3 rounded text-center font-semibold text-white";
     msgDiv.setAttribute('aria-live', 'polite');
-    document.body.insertBefore(msgDiv, document.getElementById('preview'));
+
+    // Only insert if #preview exists
+    const preview = document.getElementById('preview');
+    if (preview) {
+      document.body.insertBefore(msgDiv, preview);
+    } else {
+      document.body.appendChild(msgDiv);
+    }
   }
 
   msgDiv.textContent = message;
+  msgDiv.classList.toggle('bg-green-600', isSuccess);
+  msgDiv.classList.toggle('bg-red-600', !isSuccess);
 
-  if (isSuccess) {
-    msgDiv.classList.remove('bg-red-600');
-    msgDiv.classList.add('bg-green-600');
-  } else {
-    msgDiv.classList.remove('bg-green-600');
-    msgDiv.classList.add('bg-red-600');
-  }
-
-  setTimeout(() => {
-    msgDiv.remove();
-  }, 3000);
+  setTimeout(() => msgDiv.remove(), 3000);
 }
+
 
 
 
 async function fetchGuests() {
-    try {
-        const res = await fetch('/guests');
-        const guests = await res.json();
+  const preview = document.getElementById('preview');
+  if (!preview) return; // Exit if preview is commented out
 
-        const preview = document.getElementById('preview');
-        preview.innerHTML = '<h3>Registered Guests</h3>'; // clear previous
+  try {
+    const res = await fetch('/guests');
+    const guests = await res.json();
 
-        guests.forEach(entry => {
-            const div = document.createElement('div');
-            div.innerHTML = `<strong>${entry.type.toUpperCase()}</strong>: ${entry.names.join(' & ')}`;
-            preview.appendChild(div);
-        });
-    } catch (err) {
-        console.error('Error fetching guests:', err);
-    }
+    preview.innerHTML = '<h3>Registered Guests</h3>'; // clear previous
+
+    guests.forEach(entry => {
+      const div = document.createElement('div');
+      div.innerHTML = `<strong>${entry.type.toUpperCase()}</strong>: ${entry.names.join(' & ')}`;
+      preview.appendChild(div);
+    });
+  } catch (err) {
+    console.error('Error fetching guests:', err);
+  }
 }
+
 
 
