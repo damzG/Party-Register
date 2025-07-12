@@ -1,12 +1,10 @@
 require('dotenv').config();  // must be at the very top
-console.log('process.env.SECRET_KEY:', process.env.SECRET_KEY);
-console.log('process.env.ADMIN_PASSWORD:', process.env.ADMIN_PASSWORD);
+
 
 const SECRET_KEY = process.env.SECRET_KEY;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
-console.log('SECRET_KEY:', SECRET_KEY);  // after you define SECRET_KEY
-console.log('ADMIN_PASSWORD:', ADMIN_PASSWORD);
+
 
 
 const express = require('express');
