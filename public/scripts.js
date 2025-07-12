@@ -77,12 +77,12 @@ function toggleFields() {
 }
 
 
-function showPreview(entry) {
-    const preview = document.getElementById('preview');
-    const div = document.createElement('div');
-    div.innerHTML = `<strong>${entry.type.toUpperCase()}</strong>: ${entry.names.join(' & ')}`;
-    preview.append(div);
-}
+// function showPreview(entry) {
+//     const preview = document.getElementById('preview');
+//     const div = document.createElement('div');
+//     div.innerHTML = `<strong>${entry.type.toUpperCase()}</strong>: ${entry.names.join(' & ')}`;
+//     preview.append(div);
+// }
 
 function showMessage(message, isSuccess) {
   let msgDiv = document.getElementById('message');
