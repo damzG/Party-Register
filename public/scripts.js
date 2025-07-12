@@ -28,53 +28,61 @@ function toggleFields() {
 
 
 
- async function submitForm(e) {
-    e.preventDefault();
+async function submitForm(e) {
+  e.preventDefault();
 
-    const isCouple = document.getElementById('couple').checked;
-    let data;
+  const isCouple = document.getElementById('couple').checked;
+  let data;
 
-    if (isCouple) {
-        const name1 = document.getElementById('name1').value.trim();
-        const name2 = document.getElementById('name2').value.trim();
+  if (isCouple) {
+    const name1 = document.getElementById('name1').value.trim();
+    const name2 = document.getElementById('name2').value.trim();
 
-        if (!name1 || !name2) {
-            return showMessage('❌ Please enter both names for a couple.', false);
-        }
+    if (!name1 || !name2) {
+      return showMessage('❌ Please enter both names for a couple.', false);
+    }
 
-        data = { type: 'couple', names: [name1, name2] };
+    data = { type: 'couple', names: [name1, name2] };
+  } else {
+    const singleName = document.getElementById('single1').value.trim();
+
+    if (!singleName) {
+      return showMessage('❌ Please enter your name.', false);
+    }
+
+    data = { type: 'single', names: [singleName] };
+  }
+
+  try {
+    const response = await fetch('/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    const result = await response.json();
+
+    if (response.ok) {
+      // Check if message exists before displaying it
+      const message = result.message || 'Guest registered successfully!';
+      showMessage('✅ ' + message, true);
+
+      // Don't call showPreview if it's commented
+      // showPreview(data);
+
+      document.querySelector('form').reset();
+      toggleFields();
     } else {
-        const singleName = document.getElementById('single1').value.trim();
-
-        if (!singleName) {
-            return showMessage('❌ Please enter your name.', false);
-        }
-
-        data = { type: 'single', names: [singleName] };
+      const errorMsg = result.error || 'An error occurred.';
+      showMessage('❌ ' + errorMsg, false);
     }
 
-    try {
-        const response = await fetch('/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-
-        const result = await response.json();
-
-        if (response.ok) {
-            showMessage('✅ ' + result.message, true);
-            showPreview(data);
-            document.querySelector('form').reset();
-            toggleFields();
-        } else {
-            showMessage('❌ ' + result.error, false);
-        }
-
-    } catch (error) {
-        showMessage('❌ Error submitting the form.', false);
-    }
+  } catch (error) {
+    console.error('Submission error:', error);
+    showMessage('❌ Error submitting the form.', false);
+  }
 }
+
 
 
 // function showPreview(entry) {
