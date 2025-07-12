@@ -3,35 +3,45 @@
 <head>
   <meta charset="UTF-8" />
   <title>Admin - Registered Guests</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 2rem; }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { border: 1px solid #ccc; padding: 0.5rem; text-align: left; }
-    th { background: #eee; }
-  </style>
+  <!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
    <script>
    if (!localStorage.getItem('token')) {
     window.location.replace('admin-login.html'); // replace avoids back button confusion
   }
   </script>
 </head>
-<body>
-  <h2>Admin: Registered Guests</h2>
-  <button id="exportBtn">Export CSV</button>
-  <table id="guestsTable">
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Names</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Guest rows inserted here dynamically -->
-    </tbody>
-  </table>
+<body class="font-sans m-8">
+
+  <div id="loading" class="hidden flex justify-center items-center my-4">
+  <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+  </svg>
+  <span class="ml-2 text-blue-600 font-semibold">Loading guests...</span>
+</div>
+
+  <h2 class="text-xl sm:text-2xl font-bold mb-6">Admin: Registered Guests</h2>
+  <button id="exportBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded mb-4">Export CSV</button>
+  
+  <div class="overflow-x-auto sm:rounded-lg p-2 sm:p-6">
+    <table id="guestsTable" class="min-w-full border border-gray-300 rounded-lg overflow-hidden">
+      <thead class="bg-gray-200">
+        <tr>
+          <th class="px-4 sm:px-6 py-3 text-left text-gray-700 font-semibold text-sm sm:text-base">Type</th>
+          <th class="px-4 sm:px-6 py-3 text-left text-gray-700 font-semibold text-sm sm:text-base">Names</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Guest rows inserted dynamically -->
+      </tbody>
+    </table>
+  </div>
 
   <script>
+    const loadingEl = document.getElementById('loading');
     async function loadGuests() {
+      loadingEl.classList.remove('hidden');
       try {
         const token = localStorage.getItem('token');
         if (!token) {
@@ -56,21 +66,27 @@
         const tbody = document.querySelector('#guestsTable tbody');
         tbody.innerHTML = '';
 
-        guests.forEach(guest => {
+         guests.forEach(guest => {
           const row = document.createElement('tr');
+          row.className = "hover:bg-gray-100 transition-colors duration-200";
           row.innerHTML = `
-            <td>${guest.type}</td>
-            <td>${guest.names.join(' & ')}</td>
+            <td class="px-4 sm:px-6 py-3 border-b border-gray-300 text-sm sm:text-base">${guest.type}</td>
+            <td class="px-4 sm:px-6 py-3 border-b border-gray-300 text-sm sm:text-base">${guest.names.join(' & ')}</td>
           `;
           tbody.appendChild(row);
         });
       } catch (err) {
         alert('Failed to load guests');
         console.error(err);
-      }
+      }finally {
+    loadingEl.classList.add('hidden');
+  }
     }
 
     async function exportCSV() {
+  const btn = document.getElementById('exportBtn');
+  btn.disabled = true;
+  btn.textContent = 'Exporting...';
       try {
         const token = localStorage.getItem('token');
         if (!token) {
@@ -102,7 +118,10 @@
       } catch (error) {
         alert(error.message);
         console.error(error);
-      }
+      }finally {
+    btn.disabled = false;
+    btn.textContent = 'Export CSV';
+  }
     }
 
     // Attach exportCSV to the button click
